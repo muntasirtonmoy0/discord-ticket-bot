@@ -13,7 +13,7 @@ const express = require("express");
 const app = express();
 
 /* =========================
-   KEEP RENDER ALIVE
+   RENDER KEEP ALIVE
 ========================= */
 app.get("/", (req, res) => {
   res.send("Bot is running");
@@ -141,7 +141,7 @@ client.on("interactionCreate", async (interaction) => {
     const ticketEmbed = new EmbedBuilder()
       .setColor(0x57F287)
       .setTitle("🎫 Ticket Created")
-      .setDescription(`Hello ${interaction.user}, please describe your issue.`)
+      .setDescription(`Hello ${interaction.user}, please explain your issue.`)
       .setThumbnail(LOGO)
       .setImage(BANNER)
       .setFooter({ text: "Eternal SMP Support" })
@@ -181,11 +181,11 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 /* =========================
-   WELCOME
+   WELCOME SYSTEM
 ========================= */
 client.on("guildMemberAdd", async (member) => {
   try {
-    const channel = await client.channels.fetch(WELCOME_CHANNEL_ID);
+    const channel = await client.channels.fetch(WELCOME_CHANNEL_ID).catch(() => null);
     if (!channel) return;
 
     const embed = new EmbedBuilder()
@@ -203,27 +203,27 @@ client.on("guildMemberAdd", async (member) => {
       })
       .setTimestamp();
 
-    channel.send({ embeds: [embed] });
+    channel.send({ embeds: [embed] }).catch(console.error);
 
   } catch (err) {
-    console.log(err);
+    console.log("Welcome error:", err);
   }
 });
 
 /* =========================
-   GOODBYE (FIXED SAFE)
+   GOODBYE SYSTEM (FIXED)
 ========================= */
 client.on("guildMemberRemove", async (member) => {
   try {
-    const channel = await client.channels.fetch(GOODBYE_CHANNEL_ID);
+    const channel = await client.channels.fetch(GOODBYE_CHANNEL_ID).catch(() => null);
     if (!channel) return;
-
-    const tag = member.user?.tag || "A member";
 
     const embed = new EmbedBuilder()
       .setColor(0xED4245)
       .setTitle("👋 Member Left Eternal SMP")
-      .setDescription(`**${tag}** has left the server.\n\nGoodbye 😢`)
+      .setDescription(
+        `**${member.user?.tag || "A member"}** just left the server.\n\nGoodbye 😢`
+      )
       .setThumbnail(member.user?.displayAvatarURL?.() || LOGO)
       .setImage(BANNER)
       .setFooter({
@@ -232,10 +232,10 @@ client.on("guildMemberRemove", async (member) => {
       })
       .setTimestamp();
 
-    channel.send({ embeds: [embed] });
+    channel.send({ embeds: [embed] }).catch(console.error);
 
   } catch (err) {
-    console.log(err);
+    console.log("Goodbye error:", err);
   }
 });
 
