@@ -9,20 +9,47 @@ const {
   EmbedBuilder
 } = require('discord.js');
 
+const express = require("express");
+const app = express();
+
+/* =========================
+   RENDER KEEP-ALIVE FIX
+========================= */
+app.get("/", (req, res) => {
+  res.send("Bot is running");
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Web server running");
+});
+
+/* =========================
+   CHANNEL IDS
+========================= */
+const WELCOME_CHANNEL_ID = "1504121883841270032";
+const GOODBYE_CHANNEL_ID = "1504122077966368919";
+
+/* =========================
+   DISCORD CLIENT
+========================= */
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers
   ]
 });
 
+/* =========================
+   READY
+========================= */
 client.once('ready', () => {
   console.log(`${client.user.tag} is online!`);
 });
 
 /* =========================
-   TICKET PANEL COMMAND
+   TICKET PANEL
 ========================= */
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
@@ -34,7 +61,7 @@ client.on('messageCreate', async (message) => {
       .setDescription(
         "**Welcome to the Official Support System**\n\n" +
         "Click the button below to create a private ticket.\n\n" +
-        "🛠️ **You can use tickets for:**\n" +
+        "🛠️ You can use tickets for:\n" +
         "1. Technical support\n" +
         "2. General question\n" +
         "3. Payment and store help\n" +
@@ -43,11 +70,6 @@ client.on('messageCreate', async (message) => {
       )
       .setColor(0x2B2D31)
       .setThumbnail(message.guild.iconURL())
-      .addFields(
-        { name: '📌 Status', value: 'Online', inline: true },
-        { name: '⏱️ Response Time', value: 'Under 10 minutes', inline: true },
-        { name: '👮 Staff', value: 'Available 24/7', inline: true }
-      )
       .setFooter({
         text: `${message.guild.name} • Ticket System`,
         iconURL: message.guild.iconURL()
@@ -70,7 +92,7 @@ client.on('messageCreate', async (message) => {
 });
 
 /* =========================
-   BUTTON INTERACTIONS
+   BUTTON SYSTEM
 ========================= */
 client.on('interactionCreate', async (interaction) => {
 
@@ -82,7 +104,6 @@ client.on('interactionCreate', async (interaction) => {
     const channel = await interaction.guild.channels.create({
       name: `ticket-${interaction.user.username}`,
       type: ChannelType.GuildText,
-
       permissionOverwrites: [
         {
           id: interaction.guild.id,
@@ -109,10 +130,7 @@ client.on('interactionCreate', async (interaction) => {
 
     const ticketEmbed = new EmbedBuilder()
       .setTitle('🎫 Ticket Created')
-      .setDescription(
-        `Hello ${interaction.user}, support will assist you shortly.\n\n` +
-        `Please describe your issue clearly so staff can help you faster.`
-      )
+      .setDescription(`Hello ${interaction.user}, please describe your issue.`)
       .setColor(0x57F287)
       .setTimestamp();
 
@@ -138,17 +156,44 @@ client.on('interactionCreate', async (interaction) => {
   /* CLOSE TICKET */
   if (interaction.customId === 'close_ticket') {
 
-    const channel = interaction.channel;
-
     await interaction.reply({
       content: '🔒 Closing ticket...',
       ephemeral: true
     });
 
     setTimeout(() => {
-      channel.delete().catch(() => {});
+      interaction.channel.delete().catch(() => {});
     }, 3000);
   }
 });
 
+/* =========================
+   WELCOME MESSAGE
+========================= */
+client.on('guildMemberAdd', (member) => {
+  const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
+  if (!channel) return;
+
+  channel.send(
+    `🎉 Welcome to Eternal SMP! 🎉\n\n` +
+    `Hey ${member}, welcome! 🎉\n\n` +
+    `Make sure to check the rules and enjoy your time here!`
+  );
+});
+
+/* =========================
+   GOODBYE MESSAGE
+========================= */
+client.on('guildMemberRemove', (member) => {
+  const channel = member.guild.channels.cache.get(GOODBYE_CHANNEL_ID);
+  if (!channel) return;
+
+  channel.send(
+    `👋 ${member.user.tag} just left Eternal SMP...\nGoodbye 😢`
+  );
+});
+
+/* =========================
+   LOGIN
+========================= */
 client.login(process.env.DISCORD_TOKEN);
