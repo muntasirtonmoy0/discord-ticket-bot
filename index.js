@@ -55,7 +55,7 @@ const client = new Client({
    BOT READY
 ========================= */
 client.once("ready", () => {
-  console.log(`${client.user.tag} is online!`);
+  console.log(client.user.tag + " is online!");
 });
 
 /* =========================
