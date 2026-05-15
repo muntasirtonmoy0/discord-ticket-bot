@@ -1,4 +1,3 @@
-```js
 const {
   Client,
   GatewayIntentBits,
@@ -8,7 +7,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder
-} = require('discord.js');
+} = require("discord.js");
 
 const express = require("express");
 const app = express();
@@ -40,7 +39,7 @@ const BANNER =
   "https://cdn.discordapp.com/attachments/1504463263872712924/1504891150299959437/Untitled_design_1.png";
 
 /* =========================
-   DISCORD CLIENT
+   CLIENT
 ========================= */
 const client = new Client({
   intents: [
@@ -52,18 +51,18 @@ const client = new Client({
 });
 
 /* =========================
-   BOT READY
+   READY
 ========================= */
 client.once("ready", () => {
   console.log(client.user.tag + " is online!");
 });
 
 /* =========================
-   TICKET PANEL COMMAND
+   PANEL COMMAND
 ========================= */
 client.on("messageCreate", async (message) => {
-
   if (message.author.bot) return;
+  if (!message.guild) return;
 
   if (message.content === "!panel") {
 
@@ -73,7 +72,7 @@ client.on("messageCreate", async (message) => {
       .setDescription(
         "**Welcome to the Official Support System**\n\n" +
         "Click the button below to create a private support ticket.\n\n" +
-        "🛠️ **You can use tickets for:**\n" +
+        "🛠️ You can use tickets for:\n" +
         "1. Technical support\n" +
         "2. General question\n" +
         "3. Payment and store help\n" +
@@ -83,7 +82,7 @@ client.on("messageCreate", async (message) => {
       .setThumbnail(LOGO)
       .setImage(BANNER)
       .setFooter({
-        text: `${message.guild.name} • Support System`,
+        text: message.guild.name + " • Support System",
         iconURL: LOGO
       })
       .setTimestamp();
@@ -104,10 +103,9 @@ client.on("messageCreate", async (message) => {
 });
 
 /* =========================
-   BUTTON INTERACTIONS
+   INTERACTIONS
 ========================= */
 client.on("interactionCreate", async (interaction) => {
-
   if (!interaction.isButton()) return;
 
   /* CREATE TICKET */
@@ -116,7 +114,6 @@ client.on("interactionCreate", async (interaction) => {
     const channel = await interaction.guild.channels.create({
       name: `ticket-${interaction.user.username}`,
       type: ChannelType.GuildText,
-
       permissionOverwrites: [
         {
           id: interaction.guild.id,
@@ -144,15 +141,10 @@ client.on("interactionCreate", async (interaction) => {
     const ticketEmbed = new EmbedBuilder()
       .setColor(0x57F287)
       .setTitle("🎫 Ticket Created")
-      .setDescription(
-        `Hello ${interaction.user}, support will assist you shortly.\n\n` +
-        `Please explain your issue clearly.`
-      )
+      .setDescription(`Hello ${interaction.user}, please describe your issue.`)
       .setThumbnail(LOGO)
       .setImage(BANNER)
-      .setFooter({
-        text: "Eternal SMP Support"
-      })
+      .setFooter({ text: "Eternal SMP Support" })
       .setTimestamp();
 
     const closeButton = new ButtonBuilder()
@@ -189,28 +181,21 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 /* =========================
-   WELCOME EMBED
+   WELCOME
 ========================= */
 client.on("guildMemberAdd", async (member) => {
-
   try {
-
     const channel = await client.channels.fetch(WELCOME_CHANNEL_ID);
-
     if (!channel) return;
 
-    const welcomeEmbed = new EmbedBuilder()
+    const embed = new EmbedBuilder()
       .setColor(0x57F287)
       .setTitle("🎉 Welcome to Eternal SMP!")
       .setDescription(
         `Hey ${member}, welcome! 🎉\n\n` +
         `Make sure to check the rules and enjoy your time here!`
       )
-      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setAuthor({
-        name: member.user.tag,
-        iconURL: LOGO
-      })
+      .setThumbnail(member.user.displayAvatarURL())
       .setImage(BANNER)
       .setFooter({
         text: `Member #${member.guild.memberCount}`,
@@ -218,9 +203,7 @@ client.on("guildMemberAdd", async (member) => {
       })
       .setTimestamp();
 
-    channel.send({
-      embeds: [welcomeEmbed]
-    });
+    channel.send({ embeds: [embed] });
 
   } catch (err) {
     console.log(err);
@@ -228,28 +211,20 @@ client.on("guildMemberAdd", async (member) => {
 });
 
 /* =========================
-   GOODBYE EMBED
+   GOODBYE (FIXED SAFE)
 ========================= */
 client.on("guildMemberRemove", async (member) => {
-
   try {
-
     const channel = await client.channels.fetch(GOODBYE_CHANNEL_ID);
-
     if (!channel) return;
 
-    const goodbyeEmbed = new EmbedBuilder()
+    const tag = member.user?.tag || "A member";
+
+    const embed = new EmbedBuilder()
       .setColor(0xED4245)
       .setTitle("👋 Member Left Eternal SMP")
-      .setDescription(
-        `**${member.user.tag}** has left the server.\n\n` +
-        `Goodbye 😢`
-      )
-      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setAuthor({
-        name: member.user.tag,
-        iconURL: LOGO
-      })
+      .setDescription(`**${tag}** has left the server.\n\nGoodbye 😢`)
+      .setThumbnail(member.user?.displayAvatarURL?.() || LOGO)
       .setImage(BANNER)
       .setFooter({
         text: `${member.guild.memberCount} members remaining`,
@@ -257,9 +232,7 @@ client.on("guildMemberRemove", async (member) => {
       })
       .setTimestamp();
 
-    channel.send({
-      embeds: [goodbyeEmbed]
-    });
+    channel.send({ embeds: [embed] });
 
   } catch (err) {
     console.log(err);
@@ -270,4 +243,3 @@ client.on("guildMemberRemove", async (member) => {
    LOGIN
 ========================= */
 client.login(process.env.DISCORD_TOKEN);
-```
