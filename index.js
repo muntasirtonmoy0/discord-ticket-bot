@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log("Web server running on port " + (process.env.PORT || 3000));
+  console.log("Web server running");
 });
 
 /* =========================
@@ -51,26 +51,26 @@ const BANNER =
   "https://cdn.discordapp.com/attachments/1504463263872712924/1505517613483163690/WhatsApp_Image_2026-05-15_at_3.28.39_PM.jpeg";
 
 /* =========================
-   READY EVENT
+   READY
 ========================= */
 client.once("ready", () => {
   console.log(client.user.tag + " is online!");
 });
 
 /* =========================
-   MESSAGE COMMANDS
+   COMMANDS
 ========================= */
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
 
-  /* PAY COMMAND */
+  /* PAY COMMAND (UPDATED ONLY) */
   if (message.content === ".pay") {
     return message.channel.send(
       "💰 **Payment Methods (Eternal SMP)**\n\n" +
-      "📱 **Bkash 1:** 01741644334\n" +
-      "📱 **Bkash 2:** 01768166414\n\n" +
-      "🏦 **UCB Bank:** 066 3209 001246842\n\n" +
+      "📱 **Bkash 1 (Personal → Personal):** 01741644334\n" +
+      "📱 **Bkash 2 (Agent / Personal → Personal):** 01768166414\n\n" +
+      "🏦 **UCB Bank Account:** 066 3209 001246842\n\n" +
       "🛒 Send screenshot in support ticket!"
     );
   }
