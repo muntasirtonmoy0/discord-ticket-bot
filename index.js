@@ -37,7 +37,7 @@ const BANNER =
   "https://cdn.discordapp.com/attachments/1504463263872712924/1505517613483163690/WhatsApp_Image_2026-05-15_at_3.28.39_PM.jpeg";
 
 /* =========================
-   READY EVENT
+   READY
 ========================= */
 client.once("ready", () => {
   console.log(client.user.tag + " is online!");
@@ -50,14 +50,14 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
 
-  /* PAY COMMAND */
+  /* PAY COMMAND (UPDATED) */
   if (message.content === ".pay") {
     return message.channel.send(
-      "💰 **Payment Methods**\n\n" +
-      "📱 Bkash: 01XXXXXXXXX\n" +
-      "📱 Nagad: 01XXXXXXXXX\n" +
-      "💳 Rocket: 01XXXXXXXXX\n\n" +
-      "🛒 Send screenshot after payment in support ticket!"
+      "💰 **Payment Methods (Eternal SMP)**\n\n" +
+      "📱 **Bkash 1 (Personal → Personal):** 01741644334\n" +
+      "📱 **Bkash 2 (Agent / Personal → Personal):** 01768166414\n\n" +
+      "🏦 **UCB Bank Account:** 066 3209 001246842\n\n" +
+      "🛒 After payment, send screenshot in support ticket!"
     );
   }
 
