@@ -9,6 +9,20 @@ const {
   EmbedBuilder
 } = require("discord.js");
 
+const express = require("express");
+const app = express();
+
+/* =========================
+   WEB SERVICE FIX (RENDER)
+========================= */
+app.get("/", (req, res) => {
+  res.send("Bot is running");
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Web server running on port " + (process.env.PORT || 3000));
+});
+
 /* =========================
    CLIENT
 ========================= */
@@ -37,7 +51,7 @@ const BANNER =
   "https://cdn.discordapp.com/attachments/1504463263872712924/1505517613483163690/WhatsApp_Image_2026-05-15_at_3.28.39_PM.jpeg";
 
 /* =========================
-   READY
+   READY EVENT
 ========================= */
 client.once("ready", () => {
   console.log(client.user.tag + " is online!");
@@ -50,14 +64,14 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
 
-  /* PAY COMMAND (UPDATED) */
+  /* PAY COMMAND */
   if (message.content === ".pay") {
     return message.channel.send(
       "💰 **Payment Methods (Eternal SMP)**\n\n" +
-      "📱 **Bkash 1 (Personal → Personal):** 01741644334\n" +
-      "📱 **Bkash 2 (Agent / Personal → Personal):** 01768166414\n\n" +
-      "🏦 **UCB Bank Account:** 066 3209 001246842\n\n" +
-      "🛒 After payment, send screenshot in support ticket!"
+      "📱 **Bkash 1:** 01741644334\n" +
+      "📱 **Bkash 2:** 01768166414\n\n" +
+      "🏦 **UCB Bank:** 066 3209 001246842\n\n" +
+      "🛒 Send screenshot in support ticket!"
     );
   }
 
@@ -92,12 +106,11 @@ client.on("messageCreate", async (message) => {
 });
 
 /* =========================
-   INTERACTIONS (TICKETS)
+   INTERACTIONS
 ========================= */
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
-  /* CREATE TICKET */
   if (interaction.customId === "create_ticket") {
 
     const channel = await interaction.guild.channels.create({
@@ -150,7 +163,6 @@ client.on("interactionCreate", async (interaction) => {
     });
   }
 
-  /* CLOSE TICKET */
   if (interaction.customId === "close_ticket") {
     await interaction.reply({ content: "Closing ticket...", ephemeral: true });
 
@@ -170,9 +182,7 @@ client.on("guildMemberAdd", async (member) => {
   const embed = new EmbedBuilder()
     .setColor(0x57F287)
     .setTitle("🎉 Welcome to Eternal SMP!")
-    .setDescription(
-      `Hey ${member}, welcome!\n\nMake sure to read rules and enjoy!`
-    )
+    .setDescription(`Hey ${member}, welcome!\n\nMake sure to read rules and enjoy!`)
     .setThumbnail(member.user.displayAvatarURL())
     .setImage(BANNER)
     .setTimestamp();
